@@ -145,6 +145,36 @@ namespace PatternFinder
             return false;
         }
 
+        public static bool Find(byte[] data, Byte[] pattern, out long offsetFound, long offsetBegin, long offsetEnd)
+        {
+            offsetFound = -1;
+            if (data == null || pattern == null)
+                return false;
+            var patternSize = pattern.LongLength;
+            if (data.LongLength == 0 || patternSize == 0)
+                return false;
+
+            for (long i = offsetBegin, pos = 0; i < offsetEnd; i++)
+            {
+                if (matchByte(data[i], ref pattern[pos])) //check if the current data byte matches the current pattern byte
+                {
+                    pos++;
+                    if (pos == patternSize) //everything matched
+                    {
+                        offsetFound = i - patternSize + 1;
+                        return true;
+                    }
+                }
+                else //fix by Computer_Angel
+                {
+                    i -= pos;
+                    pos = 0; //reset current pattern position
+                }
+            }
+
+            return false;
+        }
+
         public static bool FindAll(byte[] data, Byte[] pattern, out List<long> offsetsFound)
         {
             offsetsFound = new List<long>();
